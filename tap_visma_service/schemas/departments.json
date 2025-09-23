@@ -1,0 +1,58 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "departmentId": {
+            "type": ["string", "null"]
+        },
+        "publicId": {
+            "type": ["string", "null"]
+        },
+        "description": {
+            "type": ["string", "null"]
+        },
+        "expenseAccount": {
+            "type": ["object", "null"],
+            "properties": {
+                "type": {
+                    "type": ["string", "null"]
+                },
+                "externalCode1": {
+                    "type": ["string", "null"]
+                },
+                "externalCode2": {
+                    "type": ["string", "null"]
+                },
+                "active": {
+                    "type": ["boolean", "null"]
+                },
+                "number": {
+                    "type": ["string", "null"]
+                },
+                "description": {
+                    "type": ["string", "null"]
+                }
+            }
+        },
+        "expenseSubaccount": {
+            "type": ["object", "null"],
+            "properties": {
+                "active": {
+                    "type": ["boolean", "null"]
+                },
+                "id": {
+                    "type": ["string", "null"]
+                },
+                "description": {
+                    "type": ["string", "null"]
+                }
+            }
+        },
+        "lastModifiedDateTime": {
+            "type": ["string", "null"]
+        },
+        "timestamp": {
+            "type": ["string", "null"]
+        }
+    }
+}

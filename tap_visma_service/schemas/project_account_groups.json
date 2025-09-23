@@ -1,0 +1,46 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "accountGroupId": {
+            "type": ["string", "null"]
+        },
+        "active": {
+            "type": ["boolean", "null"]
+        },
+        "description": {
+            "type": ["string", "null"]
+        },
+        "attributes": {
+            "type": ["array", "null"],
+            "items": {
+                "type": ["object", "null"],
+                "properties": {
+                    "id": {
+                        "type": ["string", "null"]
+                    },
+                    "value": {
+                        "type": ["string", "null"]
+                    },
+                    "description": {
+                        "type": ["string", "null"]
+                    }
+                }
+            }
+        },
+        "errorInfo": {
+            "type": ["string", "null"]
+        },
+        "metadata": {
+            "type": ["object", "null"],
+            "properties": {
+                "totalCount": {
+                    "type": ["integer", "null"]
+                },
+                "maxPageSize": {
+                    "type": ["integer", "null"]
+                }
+            }
+        }
+    }
+}

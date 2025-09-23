@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "internalId": {
+            "type": ["integer", "null"]
+        },
+        "number": {
+            "type": ["string", "null"]
+        },
+        "description": {
+            "type": ["string", "null"]
+        },
+        "balanceType": {
+            "type": ["string", "null"]
+        },
+        "currencyId": {
+            "type": ["string", "null"]
+        },
+        "consolidationSource": {
+            "type": ["boolean", "null"]
+        },
+        "consolBranch": {
+            "type": ["object", "null"],
+            "properties": {
+                "number": {
+                    "type": ["string", "null"]
+                },
+                "name": {
+                    "type": ["string", "null"]
+                }
+            }
+        },
+        "branchAccounting": {
+            "type": ["boolean", "null"]
+        },
+        "lastModifiedDateTime": {
+            "type": ["string", "null"]
+        },
+        "postInterCompany": {
+            "type": ["boolean", "null"]
+        }
+    }
+}

@@ -1,0 +1,92 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "financialYear": {
+            "type": ["string", "null"]
+        },
+        "released": {
+            "type": ["boolean", "null"]
+        },
+        "releasedAmount": {
+            "type": ["number", "null"]
+        },
+        "account": {
+            "type": ["object", "null"],
+            "properties": {
+                "type": {
+                    "type": ["string", "null"]
+                },
+                "externalCode1": {
+                    "type": ["string", "null"]
+                },
+                "externalCode2": {
+                    "type": ["string", "null"]
+                },
+                "active": {
+                    "type": ["boolean", "null"]
+                },
+                "number": {
+                    "type": ["string", "null"]
+                },
+                "description": {
+                    "type": ["string", "null"]
+                }
+            }
+        },
+        "subaccount": {
+            "type": ["object", "null"],
+            "properties": {
+                "active": {
+                    "type": ["boolean", "null"]
+                },
+                "id": {
+                    "type": ["string", "null"]
+                },
+                "description": {
+                    "type": ["string", "null"]
+                }
+            }
+        },
+        "description": {
+            "type": ["string", "null"]
+        },
+        "amount": {
+            "type": ["number", "null"]
+        },
+        "distributedAmount": {
+            "type": ["number", "null"]
+        },
+        "periods": {
+            "type": ["array", "null"],
+            "items": {
+                "type": ["object", "null"],
+                "properties": {
+                    "periodId": {
+                        "type": ["string", "null"]
+                    },
+                    "amount": {
+                        "type": ["number", "null"]
+                    }
+                }
+            }
+        },
+        "lastModifiedDateTime": {
+            "type": ["string", "null"]
+        },
+        "branchNumber": {
+            "type": ["object", "null"],
+            "properties": {
+                "number": {
+                    "type": ["string", "null"]
+                },
+                "name": {
+                    "type": ["string", "null"]
+                }
+            }
+        },
+        "timestamp": {
+            "type": ["string", "null"]
+        }
+    }
+}

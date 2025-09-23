@@ -1,0 +1,83 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "projectID": {
+            "type": ["string", "null"]
+        },
+        "projectTaskID": {
+            "type": ["string", "null"]
+        },
+        "accountGroupID": {
+            "type": ["string", "null"]
+        },
+        "inventoryNumber": {
+            "type": ["string", "null"]
+        },
+        "description": {
+            "type": ["string", "null"]
+        },
+        "uom": {
+            "type": ["string", "null"]
+        },
+        "rate": {
+            "type": ["number", "null"]
+        },
+        "originalBudgetQty": {
+            "type": ["number", "null"]
+        },
+        "originalBudgetAmount": {
+            "type": ["number", "null"]
+        },
+        "revisedBudgetQty": {
+            "type": ["number", "null"]
+        },
+        "revisedBudgetAmount": {
+            "type": ["number", "null"]
+        },
+        "actualQty": {
+            "type": ["number", "null"]
+        },
+        "actualAmount": {
+            "type": ["number", "null"]
+        },
+        "type": {
+            "type": ["string", "null"]
+        },
+        "committedQty": {
+            "type": ["number", "null"]
+        },
+        "committedAmount": {
+            "type": ["number", "null"]
+        },
+        "committedOpenQty": {
+            "type": ["number", "null"]
+        },
+        "committedOpenAmount": {
+            "type": ["number", "null"]
+        },
+        "committedReceivedQty": {
+            "type": ["number", "null"]
+        },
+        "committedInvoicedQty": {
+            "type": ["number", "null"]
+        },
+        "committedInvoicedAmount": {
+            "type": ["number", "null"]
+        },
+        "errorInfo": {
+            "type": ["string", "null"]
+        },
+        "metadata": {
+            "type": ["object", "null"],
+            "properties": {
+                "totalCount": {
+                    "type": ["integer", "null"]
+                },
+                "maxPageSize": {
+                    "type": ["integer", "null"]
+                }
+            }
+        }
+    }
+}

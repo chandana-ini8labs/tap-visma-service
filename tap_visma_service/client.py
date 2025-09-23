@@ -42,7 +42,7 @@ class VismaServiceStream(RESTStream):
     def url_base(self) -> str:
         """Return the API URL root, configurable via tap settings."""
         # TODO: hardcode a value here, or retrieve it from self.config
-        return "https://api.mysample.com"
+        return "https://api.finance.visma.net"
 
     @override
     @cached_property
@@ -55,8 +55,8 @@ class VismaServiceStream(RESTStream):
         return VismaServiceAuthenticator(
             client_id=self.config["client_id"],
             client_secret=self.config["client_secret"],
-            auth_endpoint="TODO: OAuth Endpoint URL",
-            oauth_scopes="TODO: OAuth Scopes",
+            auth_endpoint="https://connect.visma.com/connect/token",
+            oauth_scopes="vismanet_erp_service_api:read",
         )
 
     @property

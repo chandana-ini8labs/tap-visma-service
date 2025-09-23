@@ -27,7 +27,7 @@ class VismaServiceAuthenticator(OAuthAuthenticator, metaclass=SingletonMeta):
         """
         # TODO: Define the request body needed for the API.
         return {
-            "resource": "https://example.com",
+            "tenant_id": self.config.get("tenant_id", ""),
             "scope": self.oauth_scopes,
             "client_id": self.client_id,
             "client_secret": self.client_secret,

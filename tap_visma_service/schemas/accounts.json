@@ -1,0 +1,107 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "accountID": {
+            "type": ["integer", "null"]
+        },
+        "accountCD": {
+            "type": ["string", "null"]
+        },
+        "accountGroupCD": {
+            "type": ["string", "null"]
+        },
+        "accountClass": {
+            "type": ["string", "null"]
+        },
+        "type": {
+            "type": ["string", "null"]
+        },
+        "active": {
+            "type": ["boolean", "null"]
+        },
+        "description": {
+            "type": ["string", "null"]
+        },
+        "accountClassDescription": {
+            "type": ["string", "null"]
+        },
+        "useDefaultSub": {
+            "type": ["boolean", "null"]
+        },
+        "postOption": {
+            "type": ["string", "null"]
+        },
+        "currency": {
+            "type": ["string", "null"]
+        },
+        "taxCategory": {
+            "type": ["string", "null"]
+        },
+        "cashAccount": {
+            "type": ["boolean", "null"]
+        },
+        "publicCode1": {
+            "type": ["string", "null"]
+        },
+        "lastModifiedDateTime": {
+            "type": ["string", "null"]        
+        },
+        "externalCode1Info": {
+            "type": ["object", "null"],
+            "properties": {
+                "number": {
+                    "type": ["string", "null"]
+                },
+                "description": {
+                    "type": ["string", "null"]
+                }
+            }
+        },
+        "externalCode2Info": {
+            "type": ["object", "null"],
+            "properties": {
+                "number": {
+                    "type": ["string", "null"]
+                },
+                "description": {
+                    "type": ["string", "null"]
+                }
+            }
+        },
+        "analisysCodeInfo1": {
+            "type": ["object", "null"],
+            "properties": {
+                "number": {
+                    "type": ["string", "null"]
+                },
+                "description": {
+                    "type": ["string", "null"]
+                }
+            }
+        },
+        "controlAccountModule": {
+            "type": ["string", "null"]
+        },
+        "allowManualEntry": {
+            "type": ["boolean", "null"]
+        },
+        "timestamp": {
+            "type": ["string", "null"]
+        },
+        "errorInfo": {
+            "type": ["string", "null"]
+        },
+        "metadata": {
+            "type": ["object", "null"],
+            "properties": {
+                "totalCount": {
+                    "type": ["integer", "null"]
+                },
+                "maxPageSize": {
+                    "type": ["integer", "null"]
+                }
+            }
+        }
+    }
+}

@@ -24,40 +24,31 @@ class TapVismaService(Tap):
     # TODO: Update this section with the actual config values you expect:
     config_jsonschema = th.PropertiesList(
         th.Property(
-            "auth_token",
+            "client_id",
+            th.StringType(nullable=False),
+            required=True,
+            title="Client ID",
+            description="The client ID to authenticate against the API service",
+        ),
+        th.Property(
+            "client_secret",
             th.StringType(nullable=False),
             required=True,
             secret=True,  # Flag config as protected.
-            title="Auth Token",
-            description="The token to authenticate against the API service",
+            title="Client Secret",
+            description="The client secret to authenticate against the API service",
         ),
         th.Property(
-            "project_ids",
-            th.ArrayType(th.StringType(nullable=False), nullable=False),
-            required=True,
-            title="Project IDs",
-            description="Project IDs to replicate",
+            "tenant_id",
+            th.StringType(nullable=False),
+            title="Tenant ID",
+            description="The tenant ID to authenticate against the API service",
         ),
         th.Property(
             "start_date",
             th.DateTimeType(nullable=True),
             description="The earliest record date to sync",
-        ),
-        th.Property(
-            "api_url",
-            th.StringType(nullable=False),
-            title="API URL",
-            default="https://api.mysample.com",
-            description="The url for the API service",
-        ),
-        th.Property(
-            "user_agent",
-            th.StringType(nullable=True),
-            description=(
-                "A custom User-Agent header to send with each request. Default is "
-                "'<tap_name>/<tap_version>'"
-            ),
-        ),
+        )
     ).to_dict()
 
     @override
@@ -68,8 +59,16 @@ class TapVismaService(Tap):
             A list of discovered streams.
         """
         return [
-            streams.GroupsStream(self),
-            streams.UsersStream(self),
+            streams.AccountsStream(self),
+            streams.BranchesStream(self),
+            streams.BudgetsStream(self),
+            streams.DepartmentsStream(self),
+            streams.GeneralLedgerTransactionsStream(self),
+            streams.JournalTransactionsStream(self),
+            streams.LedgersStream(self),
+            streams.ProjectsStream(self),
+            streams.ProjectAccountGroupsStream(self),
+            streams.ProjectBudgetsStream(self),
         ]
 
 

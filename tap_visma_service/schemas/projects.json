@@ -1,0 +1,153 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "internalId": {
+            "type": ["integer", "null"]
+        },
+        "projectID": {
+            "type": ["string", "null"]
+        },
+        "customer": {
+            "type": ["object", "null"],
+            "properties": {
+                "number": {
+                    "type": ["string", "null"]
+                },
+                "name": {
+                    "type": ["string", "null"]
+                }
+            }
+        },
+        "hold": {
+            "type": ["boolean", "null"]
+        },
+        "status": {
+            "type": ["string", "null"]
+        },
+        "template": {
+            "type": ["object", "null"]
+        },
+        "description": {
+            "type": ["string", "null"]
+        },
+        "assets": {
+            "type": ["number", "null"]
+        },
+        "liability": {
+            "type": ["number", "null"]
+        },
+        "income": {
+            "type": ["number", "null"]
+        },
+        "expenses": {
+            "type": ["number", "null"]
+        },
+        "startDate": {
+            "type": ["string", "null"]
+        },
+        "endDate": {
+            "type": ["string", "null"]
+        },
+        "projectManager": {
+            "type": ["object", "null"]
+        },
+        "restrictEmployees": {
+            "type": ["boolean", "null"]
+        },
+        "restrictEquipment": {
+            "type": ["boolean", "null"]
+        },
+        "visibility": {
+            "type": ["object", "null"]
+        },
+        "defAccount": {
+            "type": ["object", "null"]
+        },
+        "defSub": {
+            "type": ["object", "null"]
+        },
+        "defAccrualAccount": {
+            "type": ["object", "null"]
+        },
+        "defAccrualSub": {
+            "type": ["object", "null"]
+        },
+        "billingPeriod": {
+            "type": ["string", "null"]
+        },
+        "nextBillingDate": {
+            "type": ["string", "null"]
+        },
+        "lastBillingDate": {
+            "type": ["string", "null"]
+        },
+        "customerLocation": {
+            "type": ["object", "null"]
+        },
+        "allocationRule": {
+            "type": ["object", "null"]
+        },
+        "billingRule": {
+            "type": ["object", "null"]
+        },
+        "branch": {
+            "type": ["object", "null"],
+            "properties": {
+                "number": {
+                    "type": ["string", "null"]
+                },
+                "name": {
+                    "type": ["string", "null"]
+                }
+            }
+        },
+        "rateTable": {
+            "type": ["object", "null"]
+        },
+        "autoAllocate": {
+            "type": ["boolean", "null"]
+        },
+        "automaticReleaseAr": {
+            "type": ["boolean", "null"]
+        },
+        "lastModifiedDateTime": {
+            "type": ["string", "null"]
+        },
+        "tasks": {
+            "type": ["array", "null"]
+        },
+        "employees": {
+            "type": ["array", "null"]
+        },
+        "publicId": {
+            "type": ["string", "null"]
+        },
+        "systemTemplate": {
+            "type": ["boolean", "null"]
+        },
+        "timeStamp": {
+            "type": ["string", "null"]
+        },
+        "attributes": {
+            "type": ["array", "null"]
+        },
+        "note": {
+            "type": ["string", "null"]
+        },
+        "errorInfo": {
+            "type": ["string", "null"]
+        },
+        "metadata": {
+            "type": ["object", "null"],
+            "properties": {
+                "totalCount": {
+                    "type": ["integer", "null"]
+                },
+                "maxPageSize": {
+                    "type": ["integer", "null"]
+                }
+            }
+        }
+    }
+}

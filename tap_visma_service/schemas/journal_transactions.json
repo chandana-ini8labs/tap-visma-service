@@ -1,0 +1,110 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "module": {
+            "type": ["string", "null"]
+        },
+        "batchNumber": {
+            "type": ["string", "null"]
+        },
+        "status": {
+            "type": ["string", "null"]
+        },
+        "hold": {
+            "type": ["boolean", "null"]
+        },
+        "transactionDate": {
+            "type": ["string", "null"]
+        },
+        "postPeriod": {
+            "type": ["string", "null"]
+        },
+        "financialPeriod": {
+            "type": ["string", "null"]
+        },
+        "ledger": {
+            "type": ["string", "null"]
+        },
+        "ledgerDescription": {
+            "type": ["string", "null"]
+        },
+        "currencyId": {
+            "type": ["string", "null"]
+        },
+        "exchangeRate": {
+            "type": ["number", "null"]
+        },
+        "autoReversing": {
+            "type": ["boolean", "null"]
+        },
+        "reversingEntry": {
+            "type": ["boolean", "null"]
+        },
+        "description": {
+            "type": ["string", "null"]
+        },
+        "originalBatchNumber": {
+            "type": ["string", "null"]
+        },
+        "debitTotal": {
+            "type": ["number", "null"]
+        },
+        "debitTotalInCurrency": {
+            "type": ["number", "null"]
+        },
+        "creditTotal": {
+            "type": ["number", "null"]
+        },
+        "creditTotalInCurrency": {
+            "type": ["number", "null"]
+        },
+        "controlTotal": {
+            "type": ["number", "null"]
+        },
+        "controlTotalInCurrency": {
+            "type": ["number", "null"]
+        },
+        "createVatTransaction": {
+            "type": ["boolean", "null"]
+        },
+        "skipVatAmountValidation": {
+            "type": ["boolean", "null"]
+        },
+        "lastModifiedDateTime": {
+            "type": ["string", "null"]
+        },
+        "transactionCode": {
+            "type": ["string", "null"]
+        },
+        "transactionCodeDescription": {
+            "type": ["string", "null"]
+        },
+        "branch": {
+            "type": ["string", "null"]
+        },
+        "timeStamp": {
+            "type": ["string", "null"]
+        },
+        "journalTransactionLines": {
+            "type": ["array", "null"]
+        },
+        "attachments": {
+            "type": ["array", "null"]
+        },
+        "errorInfo": {
+            "type": ["string", "null"]
+        },
+        "metadata": {
+            "type": ["object", "null"],
+            "properties": {
+                "totalCount": {
+                    "type": ["integer", "null"]
+                },
+                "maxPageSize": {
+                    "type": ["integer", "null"]
+                }
+            }
+        }
+    }
+}
