@@ -101,7 +101,10 @@ class GeneralLedgerTransactionsStream(VismaServiceStream):
 
         params = {
             "ledger": context["ledgerId"],
-            "lastModifiedDateTime": "2025-09-15",
+            "lastModifiedDateTime": "2025-01-01",
+            "expandAccountInfo": "true",
+            "expandBranchInfo": "true",
+            "includeTransactionBalance": "true",
         }
         return params
 
