@@ -11,6 +11,7 @@ from importlib import resources
 from singer_sdk.helpers.jsonpath import extract_jsonpath
 from singer_sdk.pagination import BaseAPIPaginator  # noqa: TC002
 from singer_sdk.streams import RESTStream
+from typing import Any, Dict, Optional, cast, Iterable
 
 from tap_visma_service.auth import VismaServiceAuthenticator
 
@@ -27,6 +28,29 @@ if t.TYPE_CHECKING:
 # TODO: Delete this is if not using json files for schema definition
 SCHEMAS_DIR = resources.files(__package__) / "schemas"
 
+    
+class PageNumberPaginator(BaseAPIPaginator[int]):
+    """Paginator for Visma APIs using `pageNumber` parameter."""
+
+    def __init__(self, start_value: int = 1, page_size: int = 1000) -> None:
+        super().__init__(start_value=start_value)
+        self.page_size = page_size  # max records per page
+
+    def get_next(self, response: Any) -> int | None:
+        """Return the next page number or None if no more data."""
+        data = response.json()
+
+        # Stop if empty list
+        if not data:
+            return None
+
+        # Stop if fewer items than page_size (last page)
+        if len(data) < self.page_size:
+            return None
+
+        # Otherwise, go to next page
+        return self.current_value + 1
+
 
 class VismaServiceStream(RESTStream):
     """VismaService stream class."""
@@ -34,8 +58,8 @@ class VismaServiceStream(RESTStream):
     # Update this value if necessary or override `parse_response`.
     records_jsonpath = "$[*]"
 
-    # Update this value if necessary or override `get_new_paginator`.
-    next_page_token_jsonpath = "$.next_page"  # noqa: S105
+    # # Update this value if necessary or override `get_new_paginator`.
+    # next_page_token_jsonpath = "$.next_page"  # noqa: S105
 
     @override
     @property
@@ -69,45 +93,31 @@ class VismaServiceStream(RESTStream):
         """
         return {}
 
-    @override
     def get_new_paginator(self) -> BaseAPIPaginator | None:
-        """Create a new pagination helper instance.
+        return PageNumberPaginator(start_value=1)
 
-        If the source API can make use of the `next_page_token_jsonpath`
-        attribute, or it contains a `X-Next-Page` header in the response
-        then you can remove this method.
-
-        If you need custom pagination that uses page numbers, "next" links, or
-        other approaches, please read the guide: https://sdk.meltano.com/en/v0.25.0/guides/pagination-classes.html.
-
-        Returns:
-            A pagination helper instance, or ``None`` to indicate pagination
-            is not supported.
-        """
-        return super().get_new_paginator()
-
-    @override
     def get_url_params(
         self,
-        context: Context | None,
-        next_page_token: t.Any | None,
-    ) -> dict[str, t.Any]:
-        """Return a dictionary of values to be used in URL parameterization.
+        context: dict | None,
+        next_page_token: Any | None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {}
 
-        Args:
-            context: The stream context.
-            next_page_token: The next page index or value.
+        # Pagination
+        params["pageNumber"] = next_page_token or 1
 
-        Returns:
-            A dictionary of URL query parameters.
-        """
-        params: dict = {}
-        if next_page_token:
-            params["page"] = next_page_token
+        # Replication / incremental key
         if self.replication_key:
             params["sort"] = "asc"
             params["order_by"] = self.replication_key
+
+        # Start date filter (applies to all streams)
+        if self.config.get("start_date"):
+            params["lastModifiedDateTime"] = self.config["start_date"]
+            params["lastModifiedDateTimeCondition"] = "%3E%3D"
+
         return params
+    
 
     @override
     def prepare_request_payload(

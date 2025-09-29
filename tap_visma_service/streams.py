@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import typing as t
 from pathlib import Path
+from datetime import datetime
 
 from singer_sdk import typing as th  # JSON Schema typing helpers
 
@@ -24,6 +25,15 @@ class AccountsStream(VismaServiceStream):
     replication_key = "lastModifiedDateTime"
     schema_filepath = SCHEMAS_DIR / "accounts.json"  # noqa: ERA001
 
+    # def get_new_paginator(self):
+    #     # No pagination for this endpoint
+    #     return None
+
+    # def get_url_params(self, context, next_page_token):
+    #     params = super().get_url_params(context, next_page_token)
+    #     params.pop("pageNumber", None)
+    #     return params
+
 class BranchesStream(VismaServiceStream):
     """Define custom stream."""
 
@@ -33,9 +43,18 @@ class BranchesStream(VismaServiceStream):
     replication_key = "lastModifiedDateTime"
     schema_filepath = SCHEMAS_DIR / "branches.json"  # noqa: ERA001
 
-    def get_url_params(self, context, next_page_token):
+    # def get_new_paginator(self):
+    #     # No pagination for this endpoint
+    #     return None
 
-        params = {
+    def get_url_params(self, context, next_page_token):
+        # Get the base params from parent (pagination, start_date, replication_key)
+        params = super().get_url_params(context, next_page_token)
+
+        params.pop("pageNumber", None)
+
+        # Add/override stream-specific params
+        params.update({
             "expandAddress": "true",
             "expandContact": "true",
             "expandCurrency": "true",
@@ -46,7 +65,8 @@ class BranchesStream(VismaServiceStream):
             "expandDeliveryContact": "true",
             "expandDefaultCountry": "true",
             "expandBankSettings": "true",
-        }
+        })
+
         return params
 
     def get_child_context(self, record: dict, context: dict) -> dict:
@@ -65,14 +85,24 @@ class BudgetsStream(VismaServiceStream):
 
     def get_child_context(self, record, context):
         return super().get_child_context(record, context)
+    
+    # def get_new_paginator(self):
+    #     # No pagination for this endpoint
+    #     return None
 
     def get_url_params(self, context, next_page_token):
+        # Get base params from parent (pagination, start_date, replication key)
+        params = super().get_url_params(context, next_page_token)
 
-        params = {
+        params.pop("pageNumber", None)
+
+        # Add stream-specific params (using context values)
+        params.update({
             "branch": context["branchNumber"],
             "ledger": context["ledgerId"],
             "financialYear": "2023",
-        }
+        })
+
         return params
 
 class DepartmentsStream(VismaServiceStream):
@@ -84,6 +114,29 @@ class DepartmentsStream(VismaServiceStream):
     replication_key = "lastModifiedDateTime"
     schema_filepath = SCHEMAS_DIR / "departments.json"  # noqa: ERA001
 
+    # def get_new_paginator(self):
+    #     # No pagination for this endpoint
+    #     return None
+
+    # def get_url_params(self, context, next_page_token):
+    #     params = super().get_url_params(context, next_page_token)
+    #     params.pop("pageNumber", None)
+    #     return params
+
+class LedgersStream(VismaServiceStream):
+    """Define custom stream."""
+
+    name = "ledgers"
+    path = "/v1/ledger"
+    primary_keys = ["internalId"]
+    replication_key = "lastModifiedDateTime"
+    schema_filepath = SCHEMAS_DIR / "ledgers.json"  # noqa: ERA001
+
+    def get_child_context(self, record: dict, context: dict) -> dict:
+        """Pass branchId to child stream"""
+        return {"ledgerId": record["number"]}
+    
+
 class GeneralLedgerTransactionsStream(VismaServiceStream):
     """Define custom stream."""
 
@@ -92,21 +145,35 @@ class GeneralLedgerTransactionsStream(VismaServiceStream):
     primary_keys = ["lineNumber", "batchNumber"]
     replication_key = "lastModifiedDateTime"
     schema_filepath = SCHEMAS_DIR / "general_ledger_transactions.json"  # noqa: ERA001
-    parent_stream_type = BranchesStream
+    parent_stream_type = LedgersStream
 
     def get_child_context(self, record, context):
         return super().get_child_context(record, context)
 
     def get_url_params(self, context, next_page_token):
+        # Get base params from parent (pagination, start_date, replication key)
+        params = super().get_url_params(context, next_page_token)
 
-        params = {
+        # Get start_date from config or fallback
+        start_date_str = self.config.get("start_date", "2023-01-01")
+        start_date = datetime.fromisoformat(start_date_str.replace("Z", "").replace("T", " "))
+        from_period = start_date.strftime("%Y%m")
+
+        # Today's period in YYYYMM
+        to_period = datetime.today().strftime("%Y%m")
+
+        # Add stream-specific params
+        params.update({
             "ledger": context["ledgerId"],
-            "lastModifiedDateTime": "2025-01-01",
+            "FromPeriod": from_period,
+            "ToPeriod": to_period,
             "expandAccountInfo": "true",
             "expandBranchInfo": "true",
             "includeTransactionBalance": "true",
-        }
+        })
+
         return params
+
 
 class JournalTransactionsStream(VismaServiceStream):
     """Define custom stream."""
@@ -117,21 +184,50 @@ class JournalTransactionsStream(VismaServiceStream):
     replication_key = "lastModifiedDateTime"
     schema_filepath = SCHEMAS_DIR / "journal_transactions.json"  # noqa: ERA001
 
+    # def get_url_params(self, context, next_page_token):
+    #     # Get base params (pagination, start_date, replication key)
+    #     params = super().get_url_params(context, next_page_token)
+
+    #     params.pop("lastModifiedDateTime", None)
+    #     params.pop("lastModifiedDateTimeCondition", None)
+
+    #     if self.config.get("start_date"):
+    #         # Use LastModifiedDateTime if start_date is provided
+    #         last_modified = self.config["start_date"]
+    #         params.update({
+    #             "LastModifiedDateTime": last_modified,
+    #         })
+    #     else:
+    #         # Use PeriodId in YYYYMM format
+    #         start_period = "202301"
+    #         params.update({
+    #             "periodId": start_period,
+    #         })
+
+    #     return params
+
     def get_url_params(self, context, next_page_token):
+        # Get base params from parent (pagination, pageNumber, etc.)
+        params = super().get_url_params(context, next_page_token)
 
-        params = {
-            "lastModifiedDateTime": "2025-09-15",
-        }
+        # Remove any leftover lastModified keys
+        params.pop("lastModifiedDateTime", None)
+        params.pop("lastModifiedDateTimeCondition", None)
+
+        # Compute PeriodId
+        if self.config.get("start_date"):
+            start_date_str = self.config["start_date"]
+            start_date = datetime.fromisoformat(start_date_str.replace("Z", "").replace("T", " "))
+            period_id = start_date.strftime("%Y%m")
+        else:
+            # Default period
+            period_id = "202301"
+
+        params.update({
+            "periodId": period_id
+        })
+
         return params
-
-class LedgersStream(VismaServiceStream):
-    """Define custom stream."""
-
-    name = "ledgers"
-    path = "/v1/ledger"
-    primary_keys = ["internalId"]
-    replication_key = "lastModifiedDateTime"
-    schema_filepath = SCHEMAS_DIR / "ledgers.json"  # noqa: ERA001
 
 class ProjectsStream(VismaServiceStream):
     """Define custom stream."""
@@ -159,6 +255,3 @@ class ProjectBudgetsStream(VismaServiceStream):
     primary_keys = ["projectID"]
     replication_key = "projectID"
     schema_filepath = SCHEMAS_DIR / "project_budgets.json"  # noqa: ERA001
-
-
-
