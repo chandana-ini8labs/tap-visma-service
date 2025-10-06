@@ -4,8 +4,7 @@ from __future__ import annotations
 
 import typing as t
 from pathlib import Path
-from datetime import datetime
-
+from datetime import datetime, timedelta
 from singer_sdk import typing as th  # JSON Schema typing helpers
 
 from tap_visma_service.client import VismaServiceStream
@@ -199,35 +198,85 @@ class JournalTransactionsStream(VismaServiceStream):
     #         })
     #     else:
     #         # Use PeriodId in YYYYMM format
-    #         start_period = "202301"
+    #         start_period = "2023-01-01"
     #         params.update({
-    #             "periodId": start_period,
+    #             "LastModifiedDateTime": start_period,
     #         })
 
     #     return params
 
+    def get_period_list(self):
+        """Generate all YYYYMM period IDs from start_date up to today."""
+        if self.config.get("start_date"):
+            start_date = datetime.fromisoformat(
+                self.config["start_date"].replace("Z", "").replace("T", " ")
+            )
+        else:
+            start_date = datetime(2023, 1, 1)
+
+        end_date = datetime.today()
+        periods = []
+
+        current = start_date
+        while current <= end_date:
+            periods.append(current.strftime("%Y%m"))
+            if current.month == 12:
+                current = current.replace(year=current.year + 1, month=1)
+            else:
+                current = current.replace(month=current.month + 1)
+
+        return periods
+
+    def get_records(self, context):
+        """Iterate over all periodIds and yield records."""
+        for period_id in self.get_period_list():
+            self._current_period_id = period_id  # temporarily store it
+            self.logger.info(f"Fetching records for period {period_id}...")
+            yield from super().get_records(context)
+        self._current_period_id = None
+
     def get_url_params(self, context, next_page_token):
-        # Get base params from parent (pagination, pageNumber, etc.)
+        """Provide URL params including periodId."""
         params = super().get_url_params(context, next_page_token)
 
-        # Remove any leftover lastModified keys
         params.pop("lastModifiedDateTime", None)
         params.pop("lastModifiedDateTimeCondition", None)
 
-        # Compute PeriodId
-        if self.config.get("start_date"):
-            start_date_str = self.config["start_date"]
-            start_date = datetime.fromisoformat(start_date_str.replace("Z", "").replace("T", " "))
-            period_id = start_date.strftime("%Y%m")
-        else:
-            # Default period
-            period_id = "202301"
+        period_id = getattr(self, "_current_period_id", None)
+        if period_id is None:
+            if self.config.get("start_date"):
+                start_date = datetime.fromisoformat(
+                    self.config["start_date"].replace("Z", "").replace("T", " ")
+                )
+                period_id = start_date.strftime("%Y%m")
+            else:
+                period_id = "202301"
 
-        params.update({
-            "periodId": period_id
-        })
-
+        params["periodId"] = period_id
         return params
+
+    # def get_url_params(self, context, next_page_token):
+    #     # Get base params from parent (pagination, pageNumber, etc.)
+    #     params = super().get_url_params(context, next_page_token)
+
+    #     # Remove any leftover lastModified keys
+    #     params.pop("lastModifiedDateTime", None)
+    #     params.pop("lastModifiedDateTimeCondition", None)
+
+    #     # Compute PeriodId
+    #     if self.config.get("start_date"):
+    #         start_date_str = self.config["start_date"]
+    #         start_date = datetime.fromisoformat(start_date_str.replace("Z", "").replace("T", " "))
+    #         period_id = start_date.strftime("%Y%m")
+    #     else:
+    #         # Default period
+    #         period_id = "202301"
+
+    #     params.update({
+    #         "periodId": period_id
+    #     })
+
+    #     return params
 
 class ProjectsStream(VismaServiceStream):
     """Define custom stream."""
