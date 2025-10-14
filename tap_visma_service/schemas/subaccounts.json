@@ -1,0 +1,58 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "subaccountNumber": {
+            "type": ["string", "null"]
+        },
+        "subaccountId": {
+            "type": ["integer", "null"]
+        },
+        "description": {
+            "type": ["string", "null"]
+        },
+        "lastModifiedDateTime": {
+            "type": ["string", "null"]
+        },
+        "active": {
+            "type": ["boolean", "null"]
+        },
+        "segments": {
+            "type": ["array", "null"],
+            "items": {
+                "type": ["object", "null"],
+                "properties": {
+                    "segmentId": {
+                        "type": ["integer", "null"]
+                    },
+                    "segmentDescription": {
+                        "type": ["string", "null"]
+                    },
+                    "segmentValue": {
+                        "type": ["string", "null"]
+                    },
+                    "segmentValueDescription": {
+                        "type": ["string", "null"]
+                    }
+                }
+            }
+        },
+        "timeStamp": {
+            "type": ["string", "null"]
+        },
+        "errorInfo": {
+            "type": ["string", "null"]
+        },
+        "metadata": {
+            "type": ["object", "null"],
+            "properties": {
+                "totalCount": {
+                    "type": ["integer", "null"]
+                },
+                "maxPageSize": {
+                    "type": ["integer", "null"]
+                }
+            }
+        }
+    }
+}

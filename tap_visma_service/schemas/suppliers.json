@@ -1,0 +1,160 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "internalId": {
+            "type": ["integer", "null"]
+        },
+        "number": {
+            "type": ["string", "null"]
+        },
+        "name": {
+            "type": ["string", "null"]
+        },
+        "status": {
+            "type": ["string", "null"]
+        },
+        "mainAddress": {
+            "type": ["object", "null"]
+        },
+        "mainContact": {
+            "type": ["object", "null"]
+        },
+        "accountReference": {
+            "type": ["string", "null"]
+        },
+        "parentRecord": {
+            "type": ["object", "null"]
+        },
+        "supplierClass": {
+            "type": ["object", "null"]
+        },
+        "creditTerms": {
+            "type": ["object", "null"]
+        },
+        "documentLanguage": {
+            "type": ["string", "null"]
+        },
+        "currencyId": {
+            "type": ["string", "null"]
+        },
+        "remitAddress": {
+            "type": ["object", "null"]
+        },
+        "remitContact": {
+            "type": ["object", "null"]
+        },
+        "paymentMethod": {
+            "type": ["object", "null"]
+        },
+        "cashAccount": {
+            "type": ["string", "null"]
+        },
+        "chargeBearer": {
+            "type": ["string", "null"]
+        },
+        "accountUsedForPayment": {
+            "type": ["string", "null"]
+        },
+        "paymentBy": {
+            "type": ["string", "null"]
+        },
+        "paymentLeadTime": {
+            "type": ["integer", "null"]
+        },
+        "paymentRefDisplayMask": {
+            "type": ["string", "null"]
+        },
+        "paySeparately": {
+            "type": ["boolean", "null"]
+        },
+        "supplierAddress": {
+            "type": ["object", "null"]
+        },
+        "supplierContact": {
+            "type": ["object", "null"]
+        },
+        "location": {
+            "type": ["object", "null"]
+        },
+        "vatRegistrationId": {
+            "type": ["string", "null"]
+        },
+        "corporateId": {
+            "type": ["string", "null"]
+        },
+        "vatZone": {
+            "type": ["object", "null"]
+        },
+        "glAccounts": {
+            "type": ["object", "null"]
+        },
+        "attributes": {
+            "type": ["array", "null"],
+            "items": {
+                "type": ["object", "null"],
+                "properties": {
+                    "id": {
+                        "type": ["string", "null"]
+                    },
+                    "value": {
+                        "type": ["string", "null"]
+                    },
+                    "description": {
+                        "type": ["string", "null"]
+                    }
+                }
+            }
+        },
+        "lastModifiedDateTime": {
+            "type": ["string", "null"]
+        },
+        "supplierPaymentMethodDetails": {
+            "type": ["array", "null"]
+        },
+        "retainageApply": {
+            "type": ["boolean", "null"]
+        },
+        "retainageCashAccountID": {
+            "type": ["string", "null"]
+        },
+        "retainagePct": {
+            "type": ["number", "null"]
+        },
+        "note": {
+            "type": ["string", "null"]
+        },
+        "numberOfEmployees": {
+            "type": ["integer", "null"]
+        },
+        "naceCode": {
+            "type": ["string", "null"]
+        },
+        "landedCostSupplier": {
+            "type": ["boolean", "null"]
+        },
+        "currencyOverride": {
+            "type": ["boolean", "null"]
+        },
+        "currencyRateOverride": {
+            "type": ["boolean", "null"]
+        },
+        "timeStamp": {
+            "type": ["string", "null"]
+        },
+        "errorInfo": {
+            "type": ["string", "null"]
+        },
+        "metadata": {
+            "type": ["object", "null"],
+            "properties": {
+                "totalCount": {
+                    "type": ["integer", "null"]
+                },
+                "maxPageSize": {
+                    "type": ["integer", "null"]
+                }
+            }
+        }
+    }
+}

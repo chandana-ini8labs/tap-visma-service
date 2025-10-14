@@ -304,3 +304,21 @@ class ProjectBudgetsStream(VismaServiceStream):
     primary_keys = ["projectID"]
     replication_key = "projectID"
     schema_filepath = SCHEMAS_DIR / "project_budgets.json"  # noqa: ERA001
+
+class SubaccountsStream(VismaServiceStream):
+    """Define custom stream."""
+
+    name = "subaccounts"
+    path = "/v1/subaccount"
+    primary_keys = ["subaccountId"]
+    replication_key = "lastModifiedDateTime"
+    schema_filepath = SCHEMAS_DIR / "subaccounts.json"
+
+class SuppliersStream(VismaServiceStream):
+    """Define custom stream."""
+
+    name = "suppliers"
+    path = "/v1/supplier"
+    primary_keys = ["internalId"]
+    replication_key = "lastModifiedDateTime"
+    schema_filepath = SCHEMAS_DIR / "suppliers.json"

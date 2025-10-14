@@ -69,6 +69,8 @@ class TapVismaService(Tap):
             streams.ProjectsStream(self),
             streams.ProjectAccountGroupsStream(self),
             streams.ProjectBudgetsStream(self),
+            streams.SubaccountsStream(self),
+            streams.SuppliersStream(self),
         ]
 
 
