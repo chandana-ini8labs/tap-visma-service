@@ -28,10 +28,18 @@ class AccountsStream(VismaServiceStream):
     #     # No pagination for this endpoint
     #     return None
 
-    # def get_url_params(self, context, next_page_token):
-    #     params = super().get_url_params(context, next_page_token)
-    #     params.pop("pageNumber", None)
-    #     return params
+    def get_url_params(self, context, next_page_token):
+        # Get the base params from parent (pagination, start_date, replication_key)
+        params = super().get_url_params(context, next_page_token)
+
+        params.pop("pageNumber", None)
+
+        # Add/override stream-specific params
+        params.update({
+            "includeAccountClassDescription": "true",
+        })
+
+        return params
 
 class BranchesStream(VismaServiceStream):
     """Define custom stream."""
