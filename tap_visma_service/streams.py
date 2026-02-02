@@ -80,12 +80,44 @@ class BranchesStream(VismaServiceStream):
         """Pass branchId to child stream"""
         return {"branchNumber": record["number"], "ledgerId": record["ledger"]["id"]}
 
+# class BudgetsStream(VismaServiceStream):
+#     """Define custom stream."""
+
+#     name = "budgets"
+#     path = "/v1/budget"
+#     primary_keys = ["financialYear"]
+#     replication_key = "lastModifiedDateTime"
+#     schema_filepath = SCHEMAS_DIR / "budgets.json"  # noqa: ERA001
+#     parent_stream_type = BranchesStream
+
+#     def get_child_context(self, record, context):
+#         return super().get_child_context(record, context)
+    
+#     # def get_new_paginator(self):
+#     #     # No pagination for this endpoint
+#     #     return None
+
+#     def get_url_params(self, context, next_page_token):
+#         # Get base params from parent (pagination, start_date, replication key)
+#         params = super().get_url_params(context, next_page_token)
+
+#         params.pop("pageNumber", None)
+
+#         # Add stream-specific params (using context values)
+#         params.update({
+#             "branch": context["branchNumber"],
+#             "ledger": context["ledgerId"],
+#             "financialYear": "2023",
+#         })
+
+#         return params
+
 class BudgetsStream(VismaServiceStream):
     """Define custom stream."""
 
     name = "budgets"
     path = "/v1/budget"
-    primary_keys = ["financialYear"]
+    primary_keys = ["financialYear", "branchNumber", "ledgerId"]  # Updated to include all dimensions
     replication_key = "lastModifiedDateTime"
     schema_filepath = SCHEMAS_DIR / "budgets.json"  # noqa: ERA001
     parent_stream_type = BranchesStream
@@ -93,9 +125,37 @@ class BudgetsStream(VismaServiceStream):
     def get_child_context(self, record, context):
         return super().get_child_context(record, context)
     
-    # def get_new_paginator(self):
-    #     # No pagination for this endpoint
-    #     return None
+    def get_financial_years(self):
+        """Generate list of financial years from 2023 to current year."""
+        current_year = datetime.today().year
+        return list(range(2023, current_year + 1))
+    
+    def get_records(self, context):
+        """Iterate over all ledgers and financial years for each branch and yield records."""
+        # Get all ledgers
+        ledgers_stream = LedgersStream(
+            tap=self._tap,
+            schema=self.schema,
+            name="ledgers"
+        )
+        
+        ledgers = list(ledgers_stream.get_records(context=None))
+        financial_years = self.get_financial_years()
+        
+        # For each combination of ledger and financial year, fetch budgets
+        for ledger in ledgers:
+            ledger_id = ledger["number"]
+            for financial_year in financial_years:
+                self._current_ledger_id = ledger_id  # Store temporarily
+                self._current_financial_year = str(financial_year)  # Store temporarily
+                self.logger.info(
+                    f"Fetching budgets for branch {context.get('branchNumber')}, "
+                    f"ledger {ledger_id}, financial year {financial_year}..."
+                )
+                yield from super().get_records(context)
+        
+        self._current_ledger_id = None
+        self._current_financial_year = None
 
     def get_url_params(self, context, next_page_token):
         # Get base params from parent (pagination, start_date, replication key)
@@ -103,11 +163,23 @@ class BudgetsStream(VismaServiceStream):
 
         params.pop("pageNumber", None)
 
+        # Get the current ledger ID and financial year
+        ledger_id = getattr(self, "_current_ledger_id", None)
+        financial_year = getattr(self, "_current_financial_year", None)
+        
+        if ledger_id is None:
+            # Fallback to context if available
+            ledger_id = context.get("ledgerId")
+        
+        if financial_year is None:
+            # Fallback to default
+            financial_year = "2023"
+
         # Add stream-specific params (using context values)
         params.update({
             "branch": context["branchNumber"],
-            "ledger": context["ledgerId"],
-            "financialYear": "2023",
+            "ledger": ledger_id,
+            "financialYear": financial_year,
         })
 
         return params
