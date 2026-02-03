@@ -253,20 +253,14 @@ class GeneralLedgerTransactionsStream(VismaServiceStream):
 
         return params
 
-
 class JournalTransactionsStream(VismaServiceStream):
     """Define custom stream."""
 
     name = "journal_transactions"
     path = "/v2/journaltransaction"
-    # primary_keys = ["journalTransactionId"]
-    replication_key = "lastModifiedDateTime"
-    schema_filepath = SCHEMAS_DIR / "journal_transactions.json"  # noqa: ERA001
-
-    # IMPORTANT: Make sure pagination is NOT disabled
-    # If you have this method, remove it or comment it out:
-    # def get_new_paginator(self):
-    #     return None
+    primary_keys = ["module", "batchNumber"]  # Add periodId to primary key
+    replication_key = None  # Disable replication key for this stream
+    schema_filepath = SCHEMAS_DIR / "journal_transactions.json"
 
     def get_period_list(self):
         """Generate all YYYYMM period IDs from start_date up to today."""
@@ -294,12 +288,13 @@ class JournalTransactionsStream(VismaServiceStream):
     def get_records(self, context):
         """Iterate over all periodIds and yield records."""
         for period_id in self.get_period_list():
-            self._current_period_id = period_id  # Store for use in get_url_params
+            self._current_period_id = period_id
             self.logger.info(f"Fetching records for period {period_id}...")
             
-            # This will handle pagination automatically for each period
             record_count = 0
             for record in super().get_records(context):
+                # Add periodId to each record for composite primary key
+                record["periodId"] = period_id
                 record_count += 1
                 yield record
             
@@ -309,16 +304,15 @@ class JournalTransactionsStream(VismaServiceStream):
 
     def get_url_params(self, context, next_page_token):
         """Provide URL params including periodId."""
-        params = super().get_url_params(context, next_page_token)
-
-        # Remove replication key params since we're using periodId
-        params.pop("lastModifiedDateTime", None)
-        params.pop("lastModifiedDateTimeCondition", None)
+        # Start fresh - don't call super() to avoid replication key logic
+        params = {}
+        
+        # Pagination only
+        params["pageNumber"] = next_page_token or 1
 
         # Use the current period being processed
         period_id = getattr(self, "_current_period_id", None)
         if period_id is None:
-            # Fallback if somehow called outside get_records loop
             if self.config.get("start_date"):
                 start_date = datetime.fromisoformat(
                     self.config["start_date"].replace("Z", "").replace("T", " ")
@@ -329,11 +323,9 @@ class JournalTransactionsStream(VismaServiceStream):
 
         params["periodId"] = period_id
         
-        # Log for debugging
         self.logger.debug(f"Period: {period_id}, Page: {next_page_token}, Params: {params}")
         
         return params
-    
 
 class ProjectsStream(VismaServiceStream):
     """Define custom stream."""
