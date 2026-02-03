@@ -263,6 +263,11 @@ class JournalTransactionsStream(VismaServiceStream):
     replication_key = "lastModifiedDateTime"
     schema_filepath = SCHEMAS_DIR / "journal_transactions.json"  # noqa: ERA001
 
+    # IMPORTANT: Make sure pagination is NOT disabled
+    # If you have this method, remove it or comment it out:
+    # def get_new_paginator(self):
+    #     return None
+
     def get_period_list(self):
         """Generate all YYYYMM period IDs from start_date up to today."""
         if self.config.get("start_date"):
@@ -293,7 +298,12 @@ class JournalTransactionsStream(VismaServiceStream):
             self.logger.info(f"Fetching records for period {period_id}...")
             
             # This will handle pagination automatically for each period
-            yield from super().get_records(context)
+            record_count = 0
+            for record in super().get_records(context):
+                record_count += 1
+                yield record
+            
+            self.logger.info(f"Fetched {record_count} records for period {period_id}")
             
         self._current_period_id = None
 
@@ -318,6 +328,10 @@ class JournalTransactionsStream(VismaServiceStream):
                 period_id = "202301"
 
         params["periodId"] = period_id
+        
+        # Log for debugging
+        self.logger.debug(f"Period: {period_id}, Page: {next_page_token}, Params: {params}")
+        
         return params
     
 

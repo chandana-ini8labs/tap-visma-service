@@ -40,8 +40,13 @@ class PageNumberPaginator(BaseAPIPaginator[int]):
         """Return the next page number or None if no more data."""
         data = response.json()
 
+        # The response is a flat array of records
+        if not isinstance(data, list):
+            # If it's not a list, something is wrong
+            return None
+
         # Stop if empty list
-        if not data:
+        if len(data) == 0:
             return None
 
         # Stop if fewer items than page_size (last page)
