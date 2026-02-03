@@ -262,6 +262,9 @@ class JournalTransactionsStream(VismaServiceStream):
     replication_key = None  # Disable replication key for this stream
     schema_filepath = SCHEMAS_DIR / "journal_transactions.json"
 
+    def get_new_paginator(self):
+        return super().get_new_paginator()
+
     def get_period_list(self):
         """Generate all YYYYMM period IDs from start_date up to today."""
         if self.config.get("start_date"):
@@ -286,28 +289,56 @@ class JournalTransactionsStream(VismaServiceStream):
         return periods
 
     def get_records(self, context):
-        """Iterate over all periodIds and yield records."""
+        """Iterate over all periodIds with pagination and yield records."""
         for period_id in self.get_period_list():
-            self._current_period_id = period_id
             self.logger.info(f"Fetching records for period {period_id}...")
             
+            page_number = 1
             record_count = 0
-            for record in super().get_records(context):
-                # Add periodId to each record for composite primary key
-                record["periodId"] = period_id
-                record_count += 1
-                yield record
             
-            self.logger.info(f"Fetched {record_count} records for period {period_id}")
+            while True:
+                # Build request URL with current period and page
+                self._current_period_id = period_id
+                self._current_page_number = page_number
+                
+                # Get records for this page
+                params = self.get_url_params(context, page_number)
+                prepared_request = self.prepare_request(context, page_number)
+                
+                response = self._request_with_backoff(
+                    prepared_request, context
+                )
+                
+                # Parse response
+                records = list(self.parse_response(response))
+                
+                # If no records returned, we've reached the end of this period
+                if not records:
+                    self.logger.info(f"No more records for period {period_id} at page {page_number}")
+                    break
+                
+                # Yield all records from this page
+                for record in records:
+                    processed_record = self.post_process(record, context)
+                    if processed_record:
+                        record_count += 1
+                        yield processed_record
+                
+                self.logger.debug(f"Period {period_id}, Page {page_number}: fetched {len(records)} records")
+                
+                # Move to next page
+                page_number += 1
+            
+            self.logger.info(f"Completed period {period_id}: {record_count} total records")
             
         self._current_period_id = None
+        self._current_page_number = None
 
     def get_url_params(self, context, next_page_token):
-        """Provide URL params including periodId."""
-        # Start fresh - don't call super() to avoid replication key logic
+        """Provide URL params including periodId and pageNumber."""
         params = {}
         
-        # Pagination only
+        # Pagination
         params["pageNumber"] = next_page_token or 1
 
         # Use the current period being processed
@@ -323,7 +354,7 @@ class JournalTransactionsStream(VismaServiceStream):
 
         params["periodId"] = period_id
         
-        self.logger.debug(f"Period: {period_id}, Page: {next_page_token}, Params: {params}")
+        self.logger.debug(f"Request params - Period: {period_id}, Page: {params['pageNumber']}")
         
         return params
 
