@@ -87,6 +87,9 @@
         },
         "timestamp": {
             "type": ["string", "null"]
+        },
+        "ledgerId": {
+            "type": ["string", "null"]
         }
     }
 }

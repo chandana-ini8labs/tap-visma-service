@@ -157,6 +157,11 @@ class BudgetsStream(VismaServiceStream):
         self._current_ledger_id = None
         self._current_financial_year = None
 
+    def post_process(self, row: dict, _context: dict | None = None) -> dict | None:
+        """Inject ledgerId from the request into each output record."""
+        row["ledgerId"] = getattr(self, "_current_ledger_id", None)
+        return row
+
     def get_url_params(self, context, next_page_token):
         # Get base params from parent (pagination, start_date, replication key)
         params = super().get_url_params(context, next_page_token)
@@ -166,11 +171,11 @@ class BudgetsStream(VismaServiceStream):
         # Get the current ledger ID and financial year
         ledger_id = getattr(self, "_current_ledger_id", None)
         financial_year = getattr(self, "_current_financial_year", None)
-        
+
         if ledger_id is None:
             # Fallback to context if available
             ledger_id = context.get("ledgerId")
-        
+
         if financial_year is None:
             # Fallback to default
             financial_year = "2023"
@@ -258,7 +263,7 @@ class JournalTransactionsStream(VismaServiceStream):
 
     name = "journal_transactions"
     path = "/v2/journaltransaction"
-    primary_keys = ["module", "batchNumber"]  # Add periodId to primary key
+    primary_keys = ["module", "batchNumber", "financialPeriod"]  # Add periodId to primary key
     replication_key = None  # Disable replication key for this stream
     schema_filepath = SCHEMAS_DIR / "journal_transactions.json"
 
